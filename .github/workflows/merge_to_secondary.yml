@@ -1,21 +1,13 @@
-name: Update secondary
-
+name: automerge
 on:
   push:
-    branches:
-      - main
-
 jobs:
-  update-cms-master:
-    name: Merge main into secondary after anything is pushed
+  automerge:
     runs-on: ubuntu-latest
     steps:
-      - name: checkout
-        uses: actions/checkout@v2
-      - name: merge
-        uses: mtanzi/action-automerge@v1
-        id: merge
-        with:
-          github_token: ${{ github.token }}
-          source: 'main'
-          target: 'secondary'
+      - id: automerge
+        name: automerge
+        uses: "pascalgn/automerge-action@v0.16.3"
+        env:
+          GITHUB_TOKEN: "${{ secrets.GITHUB_TOKEN }}"
+          BASE_BRANCHES: "main"
