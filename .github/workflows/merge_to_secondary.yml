@@ -1,23 +1,29 @@
-name: Update secondary
-
+# GitHub action to sync branches secondary on pushes to main
+name: Merge main back to secondary
 on:
   push:
     branches:
       - main
-
 jobs:
-  update-cms-master:
-    name: Merge main into secondary after anything is pushed
+  sync-branch:
     runs-on: ubuntu-latest
-    permissions:
-      contents: write
     steps:
-      - name: checkout
-        uses: actions/checkout@v2
-      - name: merge
-        uses: mtanzi/action-automerge@v1
-        id: merge
+      - name: Generate a token
+        id: generate_token
+        uses: tibdex/github-app-token@b62528385c34dbc9f38e5f4225ac829252d1ea92
         with:
-          github_token: ${{ github.token }}
-          source: 'main'
-          target: 'secondary'
+          app_id: ${{ secrets.JENKINS_APP_ID }}
+          private_key: ${{ secrets.JENKINS_APP_KEY }}
+
+      - name: Checkout branch
+        uses: actions/checkout@v3
+
+      - name: Merge main -> secondary
+        if: github.ref == 'refs/heads/main'
+        uses: devmasx/merge-branch@master
+        with:
+          type: now
+          from_branch: main
+          target_branch: secondary
+          message: Merge main into secondary
+          github_token: ${{ steps.generate_token.outputs.token }}
