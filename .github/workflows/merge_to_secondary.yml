@@ -9,6 +9,8 @@ jobs:
   update-cms-master:
     name: Merge main into secondary after anything is pushed
     runs-on: ubuntu-latest
+    permissions:
+      contents: write
     steps:
       - name: checkout
         uses: actions/checkout@v2
